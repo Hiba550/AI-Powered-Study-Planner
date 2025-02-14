@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Study Planner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+  <!-- Highlight.js CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/github.min.css" />
+</head>
+<body class="bg-gradient-to-br from-indigo-50 to-purple-50 min-h-screen text-gray-800 font-['Inter']">
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="fixed inset-0 bg-indigo-600 z-50 flex items-center justify-center hidden">
+    <div class="text-white text-center space-y-4">
+      <div class="loading mx-auto"></div>
+      <h2 class="text-2xl font-bold animate-pulse">Preparing Your Study Plan</h2>
+      <p class="text-indigo-200">Please wait while we customize your learning journey...</p>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="container mx-auto px-4 py-6 space-y-6">
+    <!-- Input View -->
+    <div id="input-view" class="animate__animated animate__fadeIn">
+      <!-- Header -->
+      <header class="bg-white rounded-xl shadow-lg p-6 flex flex-col sm:flex-row justify-between items-center animate__animated animate__fadeInDown">
+        <div class="flex items-center space-x-4">
+          <div class="bg-indigo-600 text-white p-3 rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold text-indigo-600 gradient-text">AI Study Planner</h1>
+            <!-- <div class="flex items-center space-x-2 mt-1">
+              <span class="online-indicator"></span>
+              <p class="text-sm text-gray-500">Session @{{ user_info.username }}</p>
+            </div> -->
+          </div>
+        </div>
+        <!-- <div class="mt-4 sm:mt-0 flex items-center space-x-4">
+          <div class="flex flex-col items-end">
+            <span id="datetime" class="font-mono text-gray-600 text-sm bg-gray-100 px-3 py-1 rounded-md"></span>
+            <span class="text-xs text-gray-400 mt-1">Last updated: <span id="datetime-header">Just now</span></span>
+          </div>
+        </div> -->
+      </header>
+
+      <!-- Input Section -->
+      <section id="input-section" class="bg-white rounded-xl shadow-lg p-8 space-y-6 mt-6 animate__animated animate__fadeInLeft">
+        <!-- Progress Steps -->
+        <div class="flex items-center justify-center mb-8">
+          <div class="steps-container">
+            <div class="step active" data-step="1">
+              <div class="step-circle">1</div>
+              <div class="step-text">Subjects</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step" data-step="2">
+              <div class="step-circle two">2</div>
+              <div class="step-text">Duration</div>
+            </div>
+            <div class="step-line three"></div>
+            <div class="step" data-step="3">
+              <div class="step-circle">3</div>
+              <div class="step-text">Goals</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input Fields -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="input-group">
+            <label for="subjects" class="block text-gray-600 font-medium mb-2">
+              <span class="flex items-center">
+                <span class="text-xl mr-2">📚</span>
+                Subjects
+                <span class="required-star">*</span>
+              </span>
+            </label>
+            <div class="relative">
+              <input type="text" id="subjects" class="input-field pl-4" placeholder="e.g. Math, Physics, Chemistry" />
+              <div class="input-icon"></div>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="days" class="block text-gray-600 font-medium mb-2">
+              <span class="flex items-center">
+                <span class="text-xl mr-2">📅</span>
+                Study Duration (Days)
+                <span class="required-star">*</span>
+              </span>
+            </label>
+            <div class="relative">
+              <input type="number" id="days" class="input-field pl-4" placeholder="e.g. 30" min="1" />
+              <div class="input-icon"></div>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="hours" class="block text-gray-600 font-medium mb-2">
+              <span class="flex items-center">
+                <span class="text-xl mr-2">⏰</span>
+                Hours per Day
+                <span class="required-star">*</span>
+              </span>
+            </label>
+            <div class="relative">
+              <input type="number" id="hours" class="input-field pl-4" placeholder="e.g. 4" min="1" max="24" />
+              <div class="input-icon"></div>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="goals" class="block text-gray-600 font-medium mb-2">
+              <span class="flex items-center">
+                <span class="text-xl mr-2">🎯</span>
+                Learning Goals
+                <span class="required-star">*</span>
+              </span>
+            </label>
+            <div class="relative">
+              <input type="text" id="goals" class="input-field pl-4" placeholder="e.g. Master calculus, Complete syllabus" />
+              <div class="input-icon"></div>
+            </div>
+          </div>
+
+          <div class="input-group md:col-span-2">
+            <label for="comments" class="block text-gray-600 font-medium mb-2">
+              <span class="flex items-center">
+                <span class="text-xl mr-2">💭</span>
+                Additional Comments
+              </span>
+            </label>
+            <div class="relative">
+              <textarea id="comments" rows="3" class="input-field pl-4" placeholder="Any specific requirements or preferences..."></textarea>
+              <div class="input-icon"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Generate Button -->
+        <div class="flex justify-center mt-8">
+          <button id="generate-btn" class="generate-btn">
+            <span class="btn-content">
+              <svg xmlns="http://www.w3.org/2000/svg" class="icon h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <span>Generate Study Plan</span>
+            </span>
+          </button>
+        </div>
+        
+      </section>
+    </div>
+
+    <!-- Plan View -->
+    <div id="plan-view" class="fixed inset-0 bg-gray-100 z-40 hidden">
+      <!-- Plan Header -->
+      <div class="bg-white shadow-md p-4">
+        <div class="container mx-auto flex justify-between items-center">
+          <div class="flex items-center space-x-4">
+            <button id="back-to-input" class="back-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </button>
+            <h1 class="text-2xl font-bold text-indigo-600">Your Study Plan</h1>
+          </div>
+          <!-- <div class="flex items-center space-x-4">
+            <span id="datetime-header" class="text-gray-600"></span>
+            <div class="flex items-center space-x-2">
+              <span class="online-indicator"></span>
+              <span class="text-sm text-gray-500">@{{ user_info.username }}</span>
+            </div>
+          </div> -->
+        </div>
+      </div>
+
+      <!-- Plan Content -->
+      <div class="container mx-auto p-4 h-[calc(100vh-64px)]">
+        <div class="grid grid-cols-2 gap-4 h-full">
+          <!-- Plan Canvas -->
+          <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center space-x-4">
+                <div class="bg-indigo-100 p-2 rounded-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+                <h2 class="text-xl font-semibold text-gray-700">Study Plan Details</h2>
+              </div>
+              <div class="flex space-x-2">
+                <button id="edit-btn" class="action-btn edit-btn hidden">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Edit
+                </button>
+                <button id="share-btn" class="action-btn share-btn hidden">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  </svg>
+                  Share
+                </button>
+              </div>
+            </div>
+            <!-- Added markdown-body class for Markdown formatting -->
+            <div class="flex-1 border rounded-lg p-4 overflow-y-auto plan-content markdown-body" id="plan-display"></div>
+          </div>
+
+          <!-- Discussion Panel -->
+          <div class="bg-white rounded-xl shadow-lg flex flex-col">
+            <div class="p-6 border-b border-gray-200">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                  <div class="bg-indigo-100 p-2 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                    </svg>
+                  </div>
+                  <h2 class="text-xl font-semibold text-gray-700">Discussion Panel</h2>
+                </div>
+                <div class="chat-status">
+                  <span class="typing-indicator hidden">AI is typing...</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex-1 flex flex-col p-4 overflow-hidden">
+              <!-- Added markdown-body class for Markdown formatting in chat messages -->
+              <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 pr-2 chat-container markdown-body"></div>
+              <div class="mt-4 border-t pt-4">
+                <div class="flex items-center space-x-3">
+                  <div class="relative flex-1">
+                    <input type="text" id="chat-input" class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 chat-input" placeholder="Ask about your study plan..." />
+                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
+                      <span class="text-gray-400 text-sm typing-status"></span>
+                    </div>
+                  </div>
+                  <button id="send-btn" class="chat-send-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                    </svg>
+                    Send
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notifications -->
+  <div id="notifications-container" class="fixed top-4 right-4 z-50"></div>
+
+  <!-- Marked.js for Markdown Parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- Highlight.js for Syntax Highlighting -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+  // Initialize Highlight.js to highlight any code blocks in the rendered Markdown.
+  hljs.highlightAll();
+
+  // Automatically parse the Markdown content in the "chat-messages" container if it exists.
+  const chatMessagesElement = document.getElementById('chat-messages');
+  if (chatMessagesElement) {
+    // Parse the content using Marked.js and update the innerHTML.
+    chatMessagesElement.innerHTML = marked.parse(chatMessagesElement.textContent);
+  }
+
+  // Automatically parse the Markdown content in the "plan-display" container if it exists.
+  const planDisplayElement = document.getElementById('plan-display');
+  if (planDisplayElement) {
+    // Parse the content using Marked.js and update the innerHTML.
+    planDisplayElement.innerHTML = marked.parse(planDisplayElement.textContent);
+  }
+
+  // Additional initialization code or event listeners for your app can go here.
+  // For example, handling chat input or other interactive components:
+  const chatInput = document.getElementById('chat-input');
+  const sendButton = document.getElementById('send-btn');
+  if (chatInput && sendButton) {
+    sendButton.addEventListener('click', function() {
+      const message = chatInput.value;
+      if (message.trim() !== "") {
+        // Process and display the chat message.
+        // You can further enhance this by appending the message to chatMessagesElement.
+        const newMessageHTML = marked.parse(message);
+        chatMessagesElement.innerHTML += `<div class="message">${newMessageHTML}</div>`;
+        chatInput.value = ""; // Clear the input after sending.
+        hljs.highlightAll();  // Reinitialize highlighting for any code blocks in the new message.
+      }
+    });
+  }
+});
+  </script>
+  <script src="{{ url_for('static', filename='js/planner.js') }}"></script>
+</body>
+</html>
+
+
