@@ -8,9 +8,10 @@ import re
 app = Flask(__name__)
 app.secret_key = str(uuid.uuid4())
 
-API_KEY = "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"
+API_KEY = "API_KEY" 
 ENDPOINT = "https://models.inference.ai.azure.com"
 # MODEL_NAME = "o3-mini"
+# MODEL_NAME = "gpt-4o-mini
 MODEL_NAME = "Meta-Llama-3.1-405B-Instruct"
 
 client = OpenAI(
@@ -19,7 +20,7 @@ client = OpenAI(
 )
 
 CURRENT_TIME = "2025-02-11 23:50:50"
-CURRENT_USER = "Hiba550"
+CURRENT_USER = "user"
 
 study_plans = {}
 
